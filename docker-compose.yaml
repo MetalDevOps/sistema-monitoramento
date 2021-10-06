@@ -1,0 +1,92 @@
+version: '3.9'
+
+services:
+    solr:
+        container_name: sistema_monitoramento_solr
+        image: solr:7
+        restart: always
+        networks:
+            - sistema_monitoramento
+        command:
+            - solr-demo
+
+    solr_exporter:
+        container_name: sistema_monitoramento_solr_exporter
+        image: solr:7
+        restart: always
+        depends_on:
+            - solr
+        volumes:
+            - ./config/solr_exporter/prometheus-exporter/solr-exporter-config.xml:/opt/solr/contrib/prometheus-exporter/conf/solr-exporter-config.xml
+        networks:
+            - sistema_monitoramento
+        entrypoint:
+            - "/opt/solr/contrib/prometheus-exporter/bin/solr-exporter"
+            - "-p"
+            - "9854"
+            - "-b"
+            - "http://solr:8983/solr"
+            - "-f"
+            - "/opt/solr/contrib/prometheus-exporter/conf/solr-exporter-config.xml"
+            - "-n"
+            - "8"
+
+    prometheus:
+        image: bitnami/prometheus
+        container_name: sistema_monitoramento_prometheus
+        restart: always
+        depends_on:
+            - solr_exporter
+        volumes:
+            - prometheus:/opt/bitnami/prometheus/data
+            - ./config/prometheus/prometheus.yml:/opt/bitnami/prometheus/prometheys.yml
+        networks:
+            - sistema_monitoramento
+        command:
+            - --config.file=/opt/bitnami/prometheus/prometheys.yml
+            - --web.external-url=/prometheus
+            - --web.route-prefix=/prometheus
+        
+    grafana:
+        image: grafana/grafana
+        container_name: sistema_monitoramento_grafana
+        restart: always
+        depends_on:
+            - prometheus
+        volumes:
+            - grafana:/var/lib/grafana
+            - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+            - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+            - ./config/grafana/grafana.ini:/etc/grafana/grafana.ini
+            - ./logs/grafana:/var/log/grafana
+        networks:
+            - sistema_monitoramento
+
+    nginx:
+        image: nginx
+        container_name: sistema_monitoramento_nginx
+        restart: always
+        depends_on:
+            - grafana
+        volumes:
+            - ./config/nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./config/nginx/certs:/etc/nginx/certs
+            - ./logs/nginx:/var/log/nginx
+        ports:
+            - 80:80
+            - 443:443
+        networks:
+            - sistema_monitoramento
+
+volumes:
+    grafana:
+        driver: local
+        name: sistema_monitoramento_grafana
+    prometheus:
+        driver: local
+        name: sistema_monitoramento_prometheus
+
+networks:
+    sistema_monitoramento:
+        name: sistema_monitoramento
+        driver: bridge
