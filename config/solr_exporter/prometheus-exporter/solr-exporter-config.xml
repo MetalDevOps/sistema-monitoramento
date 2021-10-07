@@ -54,6 +54,64 @@
           </lst>
         </lst>
         <arr name="jsonQueries">
+          <!-- 
+            Query metrics
+           -->
+
+           <str>
+            $jq:core-query(errors_1minRate, select(.key | endswith(".errors")), 1minRate)
+          </str>
+          <str>
+            $jq:core-query(client_errors_1minRate, select(.key | endswith(".clientErrors")), 1minRate)
+          </str>
+          <str>
+            $jq:core-query(1minRate, select(.key | endswith(".distrib.requestTimes")), 1minRate)
+          </str>
+          <str>
+            $jq:core-query(5minRate, select(.key | endswith(".distrib.requestTimes")), 5minRate)
+          </str>
+          <str>
+            $jq:core-query(median_ms, select(.key | endswith(".distrib.requestTimes")), median_ms)
+          </str>
+          <str>
+            $jq:core-query(p75_ms, select(.key | endswith(".distrib.requestTimes")), p75_ms)
+          </str>
+          <str>
+            $jq:core-query(p95_ms, select(.key | endswith(".distrib.requestTimes")), p95_ms)
+          </str>
+          <str>
+            $jq:core-query(p99_ms, select(.key | endswith(".distrib.requestTimes")), p99_ms)
+          </str>
+          <str>
+            $jq:core-query(mean_rate, select(.key | endswith(".distrib.requestTimes")), meanRate)
+          </str>
+          
+          <!-- Local (non-distrib) query metrics -->
+          <str>
+            $jq:core-query(local_1minRate, select(.key | endswith(".local.requestTimes")), 1minRate)
+          </str>
+          <str>
+            $jq:core-query(local_5minRate, select(.key | endswith(".local.requestTimes")), 5minRate)
+          </str>
+          <str>
+            $jq:core-query(local_median_ms, select(.key | endswith(".local.requestTimes")), median_ms)
+          </str>
+          <str>
+            $jq:core-query(local_p75_ms, select(.key | endswith(".local.requestTimes")), p75_ms)
+          </str>
+          <str>
+            $jq:core-query(local_p95_ms, select(.key | endswith(".local.requestTimes")), p95_ms)
+          </str>
+          <str>
+            $jq:core-query(local_p99_ms, select(.key | endswith(".local.requestTimes")), p99_ms)
+          </str>
+          <str>
+            $jq:core-query(local_mean_rate, select(.key | endswith(".local.requestTimes")), meanRate)
+          </str>
+          <str>
+            $jq:core-query(local_count, select(.key | endswith(".local.requestTimes")), count, COUNTER)
+          </str>
+
           <!--
             jetty metrics
           -->
