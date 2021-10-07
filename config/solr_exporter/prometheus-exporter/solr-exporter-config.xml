@@ -58,6 +58,9 @@
             Query metrics
            -->
 
+            $jq:core(requests_total, endswith(".requestTimes"), count, COUNTER)
+
+
            <str>
             $jq:core-query(errors_1minRate, select(.key | endswith(".errors")), 1minRate)
           </str>
