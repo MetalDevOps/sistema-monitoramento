@@ -3,7 +3,7 @@ version: '3.9'
 services:
     solr:
         container_name: sistema_monitoramento_solr
-        image: solr:7
+        image: solr:8.8
         restart: always
         networks:
             - sistema_monitoramento
@@ -12,7 +12,7 @@ services:
 
     solr_exporter:
         container_name: sistema_monitoramento_solr_exporter
-        image: solr:7
+        image: solr:8.8
         restart: always
         depends_on:
             - solr
@@ -32,7 +32,7 @@ services:
             - "8"
 
     prometheus:
-        image: bitnami/prometheus
+        image: bitnami/prometheus:2.26.0
         container_name: sistema_monitoramento_prometheus
         restart: always
         depends_on:
@@ -48,7 +48,7 @@ services:
             - --web.route-prefix=/prometheus
         
     grafana:
-        image: grafana/grafana
+        image: grafana/grafana:7.4.2
         container_name: sistema_monitoramento_grafana
         restart: always
         depends_on:
